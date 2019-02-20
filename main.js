@@ -215,8 +215,18 @@ function updateBuyPrice() {
 function investETH2() {
     var trxspenddoc = document.getElementById('ethtospend')
     suntospend = tron.toSun(trxspenddoc.value)
-    investETH2(suntospend, function() {
+    investETH(suntospend, function() {
         displayTransactionMessage();
+    });
+}
+
+function investETH(trx, callback) {
+    myContract.investETH().send({
+        callValue: trx
+    }).then(result => {
+        callback();
+    }).catch((err) => {
+        console.log(err)
     });
 }
 
