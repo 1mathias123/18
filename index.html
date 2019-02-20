@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="jumbotron-narrow.css" rel="stylesheet">
+    <link href="custom.css" rel="stylesheet">
+
+    <script src="TronWeb.js"></script>
+    <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-core.min.js"></script>
+    <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-tron.min.js"></script>
+    <script src="main.js"></script>
+    <script src="interface.js"></script>
+
+  </head>
+
+  <body>
+
+    <div id="myModal" class="modal">
+
+      <!-- Modal content -->
+      <div class="modal-content">
+        <!--<span class="close">&times;</span>-->
+        <div id="modal-internal"></div>
+      </div>
+
+    </div>
+
+    <div class="container">
+      <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+          </ul>
+        </nav>
+		<br>
+
+      </div>
+
+      <div class="jumbotron">
+
+            <p class="lead"></p>
+
+          <div class="container altcolor">
+              <div class="row">
+                    <div class="col-md-4" >
+                    </div>
+                    </h2>
+                    </div>
+              </div>
+              <br><br>
+                <div class="row">
+
+                    <div class="col-md-4"><p><a class="btn btn-lg btn-success" onclick="hatchEggs1(displayTransactionMessage)" role="button">Hatch <span id="hatchcrocsquantity">?</span> Alligators</a></p></div>
+              </div>
+              <div class="row">
+                  <div class="col-md-4"></div>
+                  <div class="col-md-4">
+                    <p> <a class="btn btn-lg btn-info" onclick="sellEggs(displayTransactionMessage)"  role="button">Sell For </a></p>
+                  </div>
+              </div>
+                <div class="row">
+                    <div class="col-md-4" >
+                    </div>
+                    <div class="col-md-8">
+                    </div>
+              </div>
+          </div>
+          <div class="container altcolor">
+              <div class="row">
+
+
+                    </div>
+                <div class="col-md-7">
+                    <a class="btn btn-lg btn-info" onclick="buyEggs2()"  role="button">Buy</a>
+                    <h2><span id="eggstobuy">?</span> eggs for </h2><input class="form-control" type="number" style="width: 130px" onchange="updateBuyPrice()" step="0.01" value="0.01" id="ethtospend">
+                </div>
+
+              </div>
+              <div class="row">
+                <div class="col-md-4"></div>
+                  <div class="col-md-4">
+
+                </div>
+              </div>
+          </div>
+
+
+      </div>
+
+
+
+    
+
+      </div>
+
+      <footer class="footer">
+      </footer>
+
+    </div> <!-- /container -->
+
+    <script>
+        main()
+    </script>
+  </body>
+</html>
