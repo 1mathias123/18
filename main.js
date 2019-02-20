@@ -1,6 +1,11 @@
 var modal
 var modalContent
-
+var lastNumEggs = -1
+var lastNumCrocs = -1
+var lastSecondsUntilFull = 100
+lastHatchTime = 0
+var eggstohatch1 = 864
+var lastUpdate = new Date().getTime()
 
 var tron;
 var scatter;
@@ -92,6 +97,121 @@ function controlLoopFaster() {
     setTimeout(controlLoopFaster, 30)
 }
 
+function refreshData() {
+    var sellsforexampledoc = document.getElementById('sellsforexample')
+    marketEggs(function(eggs) {
+        eggs = eggs / 10
+        calculateEggSell(eggs, function(sun) {
+            devFee(sun, function(fee) {
+                console.log('examplesellprice ', sun)
+                sellsforexampledoc.textContent = '(' + formatEggs(eggs) + ' eggs would sell for ' + formatTrxValue(tron.fromSun(sun)) + ')'
+            });
+        });
+    });
+    lastHatch(tron.defaultAddress['base58'], function(lh) {
+        lastHatchTime = lh
+    });
+    EGGS_TO_HATCH_1CROCS(function(eggs) {
+        eggstohatch1 = eggs
+    });
+    getMyEggs(function(eggs) {
+        if (lastNumEggs != eggs) {
+            lastNumEggs = eggs
+            lastUpdate = new Date().getTime()
+            updateEggNumber(eggs/eggstohatch1)
+
+        }
+        var timeuntilfulldoc = document.getElementById('timeuntilfull')
+        secondsuntilfull = eggstohatch1 - eggs / lastNumCrocs
+        console.log('secondsuntilfull ', secondsuntilfull, eggstohatch1, eggs, lastNumCrocs)
+        lastSecondsUntilFull = secondsuntilfull
+        timeuntilfulldoc.textContent = secondsToString(secondsuntilfull)
+        if (lastNumCrocs == 0) {
+            timeuntilfulldoc.textContent = '?'
+        }
+    });
+    getMyCrocs(function(crocs) {
+        lastNumCrocs = crocs
+        var gfsdoc = document.getElementById('getfreecrocs')
+        if (crocs > 0) {
+            gfsdoc.style.display = "none"
+        } else {
+            gfsdoc.style.display = "inline-block"
+        }
+        var allnumcrocs = document.getElementsByClassName('numcrocs')
+        for (var i = 0; i < allnumcrocs.length; i++) {
+            if (allnumcrocs[i]) {
+                allnumcrocs[i].textContent = translateQuantity(crocs, 0)
+            }
+        }
+        var productiondoc = document.getElementById('production')
+        productiondoc.textContent = formatEggs(lastNumCrocs * 60 * 60)
+    });
+    updateBuyPrice()
+    updateSellPrice()
+    var prldoc = document.getElementById('playerreflink')
+    prldoc.textContent = window.location.origin + "?ref=" + tron.defaultAddress['base58']
+    var copyText = document.getElementById("copytextthing");
+    copyText.value = prldoc.textContent
+}
+
+function updateEggNumber(eggs) {
+    var hatchcrocsquantitydoc = document.getElementById('hatchcrocsquantity')
+    hatchcrocsquantitydoc.textContent = translateQuantity(eggs, 0)
+    var allnumeggs = document.getElementsByClassName('numeggs')
+    for (var i = 0; i < allnumeggs.length; i++) {
+        if (allnumeggs[i]) {
+            allnumeggs[i].textContent = translateQuantity(eggs)
+        }
+    }
+}
+
+function hatchEggs1() {
+    ref = getQueryVariable('ref')
+    if (!tron.isAddress(ref)) {
+          ref = tron.defaultAddress['base58']
+    }
+    console.log('hatcheggs ref ', ref)
+    hatchEggs(ref, displayTransactionMessage())
+}
+
+function liveUpdateEggs() {
+    if (lastSecondsUntilFull > 1 && lastNumEggs >= 0 && lastNumCrocs > 0 && eggstohatch1 > 0) {
+        currentTime = new Date().getTime()
+        if (currentTime / 1000 - lastHatchTime > eggstohatch1) {
+            return;
+        }
+        difference = (currentTime - lastUpdate) / 1000
+        additionalEggs = Math.floor(difference * lastNumCrocs)
+        updateEggNumber((lastNumEggs + additionalEggs)/eggstohatch1)
+    }
+}
+
+function updateSellPrice() {
+    var eggstoselldoc = document.getElementById('sellprice')
+    //eggstoselldoc.textContent='?'
+    getMyEggs(function(eggs) {
+        calculateEggSell(eggs, function(sun) {
+            devFee(sun, function(fee) {
+                console.log('sellprice ', sun)
+                eggstoselldoc.textContent =  formatTrxValue(tron.fromSun(sun - fee))
+            });
+        });
+    });
+}
+
+function updateBuyPrice() {
+    var eggstobuydoc = document.getElementById('eggstobuy')
+    //eggstobuydoc.textContent='?'
+    var trxtospenddoc = document.getElementById('ethtospend')
+    suntospend = tron.toSun(trxtospenddoc.value)
+    calculateEggBuySimple(suntospend, function(eggs) {
+        devFee(eggs, function(fee) {
+            eggstobuydoc.textContent = formatEggs(eggs - fee)
+        });
+    });
+}
+
 function investETH2() {
     var trxspenddoc = document.getElementById('ethtospend')
     suntospend = tron.toSun(trxspenddoc.value)
@@ -100,6 +220,9 @@ function investETH2() {
     });
 }
 
+function formatEggs(eggs) {
+    return translateQuantity(eggs / eggstohatch1)
+}
 
 function translateQuantity(quantity, precision) {
     quantity = Number(quantity)
@@ -204,6 +327,35 @@ function secondsToString(seconds) {
 }
 
 
+function disableButtons() {
+    var allnumanthill = document.getElementsByClassName('btn-lg')
+    for (var i = 0; i < allnumanthill.length; i++) {
+        if (allnumanthill[i]) {
+            allnumanthill[i].style.display = "none"
+        }
+    }
+    var allnumanthill = document.getElementsByClassName('btn-md')
+    for (var i = 0; i < allnumanthill.length; i++) {
+        if (allnumanthill[i]) {
+            allnumanthill[i].style.display = "none"
+        }
+    }
+}
+
+function enableButtons() {
+    var allnumanthill = document.getElementsByClassName('btn-lg')
+    for (var i = 0; i < allnumanthill.length; i++) {
+        if (allnumanthill[i]) {
+            allnumanthill[i].style.display = "inline-block"
+        }
+    }
+    var allnumanthill = document.getElementsByClassName('btn-md')
+    for (var i = 0; i < allnumanthill.length; i++) {
+        if (allnumanthill[i]) {
+            allnumanthill[i].style.display = "inline-block"
+        }
+    }
+}
 
 function onlyLetters(text) {
     return text.replace(/[^0-9a-zA-Z\s\.!?,]/gi, '')
