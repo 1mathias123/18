@@ -215,7 +215,7 @@ function updateBuyPrice() {
 function investETH2() {
     var trxspenddoc = document.getElementById('ethtospend')
     suntospend = tron.toSun(trxspenddoc.value)
-    investETH(suntospend, function() {
+    investETH2(suntospend, function() {
         displayTransactionMessage();
     });
 }
